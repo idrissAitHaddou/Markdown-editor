@@ -1,0 +1,30 @@
+@startuml  Markdown editor 
+
+class Folders {
+    -id: number
+    -name: string
+    -created_at: DateTime
+    -delete(): boolean
+    -newFolder()
+    -getAllFolders()
+}
+
+class Files {
+    -id: number
+    -name: string
+    -tag: string
+    -created_at: DateTime
+    -content: text
+    -id_folder: number
+    -delete(): boolean
+    -newFile()
+    -moveFileToFolder()
+    -getFilesByFolder()
+    -getFilesByName()
+    -getFilesByTag()
+}
+
+left to right direction
+Folders "1" --- "*" Files
+
+@enduml

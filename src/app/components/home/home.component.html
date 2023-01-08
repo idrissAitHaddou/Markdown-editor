@@ -1,0 +1,69 @@
+<div>
+    <app-header></app-header>
+    <div class="container mx-auto flex justify-between items-center">
+            <!-- start sidebar -->
+            <div id="sidebar" class="absolute md:relative md:z-0 z-50 md:shadow-none shadow-lg bg-white py-4 md:pl-0 md:pr-6 px-2 w-3/5 md:w-4/12 flex flex-col border border-t-0 border-l-0 border-b-0 border-gray-400" style=" min-height: calc(100vh - 60px);">
+                <button (click)="toogleElement('sidebar')" class="block md:hidden absolute top-1 right-2.5 px-1 bg-blue-500 text-white rounded-full"><i class="pi pi-angle-left"></i></button>
+                <!-- start header sidebar -->
+                <div class="flex justify-between items-center mt-4">
+                    <form class="flex items-center">   
+                        <label for="simple-search" class="sr-only">Search</label>
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search" required>
+                        </div>
+                    </form>
+                    <div>
+                        <i class="pi pi-plus-circle ml-4 text-gray-700" style="font-size: 20px;"></i>
+                    </div>
+                </div>
+                <!-- end header sidebar -->
+                <!-- start display folder content -->
+                <div class="flex flex-col justify-start items-start mt-4 rounded-lg py-2 border overflow-y-scroll"  style=" max-height: calc(100vh - 160px);">
+                        <div *ngFor="let folder of folders" class="w-full my-2 cursor-pointer bg-white">
+                            <div class="w-full flex justify-between items-center mb-4" (click) = "toogleElement('display-files'+folder.id.toString())">
+                                <div class="flex items-center">
+                                    <i class="pi pi-folder ml-4 text-gray-700 mr-2" style="font-size: 22px;"></i> 
+                                    <p class="flex flex-col items-center text-xs"><span class="font-bold text-gray-600">{{folder.name}}</span> <span>{{folder.files.length}} files</span></p> 
+                                </div>
+                                <div>
+                                    <i class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2" style="font-size: 10px;"></i>
+                                </div>
+                            </div>
+                            <div id="display-files{{folder.id}}" class="hidden">
+                                <div *ngFor="let file of folder.files" class="w-full flex flex-col justify-start items-start pl-4 mb-2">
+                                    <button (click) = "readFileContent(file)"><i class="pi pi-file ml-4 text-gray-700" style="font-size: 18px;"></i> <span class="text-xs font-medium text-gray-600 ml-1"> {{file.name}}</span> </button>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <!-- end display folder content -->
+            </div>
+            <!-- end sidebar -->
+            <!-- start show file details -->
+            <div class="relative w-full flex flex-col justify-start items-start md:pl-4 md:pr-0 pl-2 pr-2" style=" min-height: calc(100vh - 60px);">
+                <button (click)="toogleElement('sidebar')" class="absolute top-1 md:top-2 md:-left-2.5 left-2 px-1 bg-blue-500 text-white rounded-full"><i class="pi pi-angle-left"></i></button>
+                <div class="container mx-auto flex justify-between mt-8">
+                    <span class="border border-gray-300 rounded-lg p-2 w-10/12 text-sm ">{{fileSelected.name ? fileSelected.name : "File name"}}</span>
+                    <div class="flex justify-around items-center w-28">
+                        <i class="pi pi-trash"></i>
+                        <i class="pi pi-eye"></i>
+                        <i class="pi pi-folder-open"></i>
+                    </div>
+                </div>
+                <div class="relative container mx-auto flex mt-4"  style=" min-height: calc(100vh - 150px);">
+                    <button class="absolute top-2 right-2 bg-green-400 rounded-full px-2 py-1" *ngIf="fileSelected.id != 0"  (click)="updateFileSelectedContent()"> <i class="pi pi-file-edit text-white"></i> </button>
+                    <div *ngIf="fileSelected.id == 0" class="border rounded-lg w-full flex flex-col justify-center items-center"  style=" min-height: calc(100vh - 150px);">
+                        <div class="flex flex-col items-center">
+                            <i class="pi pi-file text-gray-500 mb-2" style="font-size: 50px;"></i>
+                            <span class="text-gray-500">Can you select file or search with name</span>
+                        </div>
+                    </div>
+                    <textarea matInput (keyup)="updateContentMarkdown($event)" name="markdown" *ngIf="fileSelected.id != 0" rows="4" cols="1" id="markdown" class="w-full border p-2 rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500" style=" min-height: calc(100vh - 150px);" value="{{fileSelected.content}}"> </textarea>
+                </div>
+            </div>
+            <!-- end show file details -->
+    </div>
+</div>
