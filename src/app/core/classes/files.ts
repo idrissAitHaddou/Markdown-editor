@@ -1,4 +1,4 @@
-export class Files {
+export class File {
     id: number = 0;
     name: string = "";
     created_at: string = "";

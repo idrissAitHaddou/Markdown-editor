@@ -1,7 +1,7 @@
-import { Files } from "./files";
+import { File } from "./files";
 
-export class Folders {
+export class Folder {
     id: number = 0;
     name: string = "";
-    files: Files[] = [];
+    files: File[] = [];
 }
