@@ -16,7 +16,7 @@ import { MarkdownModule } from 'ngx-markdown';
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,12 +1,25 @@
-
 <div>
+    <!--  show alert message  -->
+    <div *ngIf="messageAlert != ''" class="absolute z-50 top-10 right-0 flex justify-end mt-2 mr-2">
+        <div id="alert-4" [class]="alertStyle.bg" role="alert">
+            <svg aria-hidden="true" [class] = "alertStyle.svgstyle" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            <span class="sr-only">Info</span>
+            <div [class]="alertStyle.message">
+                {{messageAlert}}
+            </div>
+            <button (click)="messageAlert = ''" type="button" [class]="alertStyle.button" data-dismiss-target="#alert-4" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
     <app-header></app-header>
     <div class="container mx-auto flex justify-between items-start">
-            <!-- start sidebar -->
-            <div id="sidebar" class="absolute md:relative md:z-0 z-50 md:shadow-none shadow-lg bg-white py-4 md:pl-0 md:pr-6 px-2 w-3/5 md:w-4/12 flex flex-col border border-t-0 border-l-0 border-b-0 border-gray-400" style=" min-height: calc(100vh - 60px);">
-                <button (click)="toogleElement('sidebar')" class="block md:hidden absolute top-1 right-2.5 px-1 bg-blue-500 text-white rounded-full"><i class="pi pi-angle-left"></i></button>
-                <!-- start header sidebar -->
-                <div class="flex justify-between items-center mt-4">
+        <!-- start sidebar -->
+        <div id="sidebar" class="absolute md:relative md:z-0 z-50 md:shadow-none shadow-lg bg-white py-4 md:pl-0 md:pr-6 px-2 w-3/5 md:w-4/12 flex flex-col border border-t-0 border-l-0 border-b-0 border-gray-400" style=" min-height: calc(100vh - 60px);">
+            <button (click)="toogleElement('sidebar')" class="block md:hidden absolute top-1 right-2.5 px-1 bg-blue-500 text-white rounded-full"><i class="pi pi-angle-left"></i></button>
+            <!-- start header sidebar -->
+            <div class="flex justify-between items-center mt-4">
                     <form class="flex items-center">   
                         <label for="simple-search" class="sr-only">Search</label>
                         <div class="relative w-full">
@@ -32,21 +45,23 @@
                 </div>
                 <!-- end header sidebar -->
                 <!-- start display folder content -->
-                <div *ngIf="folders.length>0 || files.length>0" class="flex flex-col justify-start items-start mt-4 rounded-lg py-2 border overflow-y-scroll"  style=" max-height: calc(100vh - 160px);">
+                <div *ngIf="folders.length>0 || files.length>0" id="display-files-without-folder" class="flex flex-col justify-start items-start mt-4 rounded-lg py-2 border overflow-y-scroll"  style=" max-height: calc(100vh - 160px);">
                         <!-- start display files without folder -->
                         <div *ngFor="let file of files" class="w-full flex justify-between items-start mb-2">
-                            <button (click) = "readFileContent(file)"><i class="pi pi-file ml-4 text-gray-700" style="font-size: 18px;"></i> <span class="text-xs font-medium text-gray-600 ml-1"> {{file.name}}</span> </button>
+                            <button *ngIf="file.id != fileSelected.id" (click) = "readFileContent(file);currentFolder=0"><i class="pi pi-file ml-4 text-gray-700" style="font-size: 18px;"></i> <span class="text-xs font-medium text-gray-600 ml-1"> {{file.name}}</span> </button>
+                            <button *ngIf="file.id == fileSelected.id" (click) = "readFileContent(file);currentFolder=0"><i class="pi pi-file ml-4 text-blue-700" style="font-size: 18px;"></i> <span class="text-xs font-bold text-blue-600 ml-1"> {{file.name}}</span> </button>
                             <div class="">
-                                <i  id="dropdownMenuIconButtonFiles{{file.id}}" class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2 cursor-pointer" style="font-size: 12px;" data-dropdown-placement="left-end" attr.data-dropdown-toggle="dropdownDotsFiles{{file.id}}" aria-hidden="true"></i>
+                                <i id="dropdownMenuIconButtonFiles{{file.id}}" class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2 cursor-pointer" style="font-size: 12px;" data-dropdown-placement="left-end" attr.data-dropdown-toggle="dropdownDotsFiles{{file.id}}" aria-hidden="true" data-dropdown-placement="left-end"></i>
                                 <!-- Dropdown menu -->
-                                <div id="dropdownDotsFiles{{file.id}}" class="z-10 hidden bg-blue-400 divide-y divide-gray-100 rounded shadow w-44">
+                                <div id="dropdownDotsFiles{{file.id}}" class="absolute z-10 hidden bg-blue-400 divide-y divide-gray-100 rounded shadow w-44">
                                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" attr.aria-labelledby="dropdownMenuIconButtonFiles{{file.id}}">
                                         <li>
                                         <button (click) = "deleteFile(file.id)" class="w-full block text-left text-white px-4 py-2 hover:bg-gray-100 dark:hover:bg-blue-300">Delete File</button>
                                         </li>
                                         <li>
                                             <!--start show list folders  -->
-                                                <button id="doubleDropdownButtonFiles{{file.id}}" attr.data-dropdown-toggle="doubleDropdownfiles{{file.id}}" data-dropdown-placement="right-start" type="button" class="flex items-center justify-between w-full px-4 py-2 text-white bg-blue-400 hover:bg-blue-300e">Add to folder<svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button>
+                                                <button id="doubleDropdownButtonFiles{{file.id}}" attr.data-dropdown-toggle="doubleDropdownfiles{{file.id}}" data-dropdown-placement="right-start" type="button" class="flex items-center justify-between w-full px-4 py-2 text-white bg-blue-400 hover:bg-blue-300e">Add to folder
+                                                    <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button>
                                                 <div id="doubleDropdownfiles{{file.id}}" class="z-50 hidden bg-blue-400 divide-y rounded shadow w-44">
                                                     <ul class="py-1 text-sm dark:text-gray-200" attr.aria-labelledby="doubleDropdownButtonFiles{{file.id}}">
                                                     <li *ngFor="let folder of folders">
@@ -63,24 +78,29 @@
                         <!-- end display files without folder -->
                         <div *ngFor="let folder of folders" class="w-full my-2 cursor-pointer bg-white">
                             <div class="w-full flex justify-between items-center mb-4">
-                                <div class="flex items-center" (click) = "toogleElement('display-files'+folder.id.toString())">
+                                <div *ngIf="currentFolder!=folder.id" class="flex items-center" (click) = "toogleElement('display-files'+folder.id.toString())">
                                     <i class="pi pi-folder ml-4 text-gray-700 mr-2" style="font-size: 22px;"></i> 
                                     <p class="flex flex-col items-center text-xs"><span class="font-bold text-gray-600">{{folder.name}}</span> <span>{{folder.files.length}} files</span></p> 
                                 </div>
+                                <div *ngIf="currentFolder==folder.id" class="flex items-center" (click) = "toogleElement('display-files'+folder.id.toString())">
+                                    <i class="pi pi-folder ml-4 text-blue-700 mr-2" style="font-size: 22px;"></i> 
+                                    <p class="flex flex-col items-center text-xs text-blue-600"><span class="font-bold text-blue-600">{{folder.name}}</span> <span>{{folder.files.length}} files</span></p> 
+                                </div>
                                 <div>
-                                    <i class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2" style="font-size: 10px;"></i>
+                                    <!-- <i class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2" style="font-size: 10px;"></i> -->
                                 </div>
                             </div>
                             <div id="display-files{{folder.id}}" class="hidden">
                                 <div *ngFor="let file of folder.files" class="w-full flex justify-between items-start pl-4 mb-2">
-                                    <button (click) = "readFileContent(file)"><i class="pi pi-file ml-4 text-gray-700" style="font-size: 18px;"></i> <span class="text-xs font-medium text-gray-600 ml-1"> {{file.name}}</span> </button>
+                                    <button  *ngIf="file.id != fileSelected.id" (click) = "readFileContent(file);currentFolder=folder.id"><i class="pi pi-file ml-4 text-gray-700" style="font-size: 18px;"></i> <span class="text-xs font-medium text-gray-600 ml-1"> {{file.name}}</span> </button>
+                                    <button  *ngIf="file.id == fileSelected.id" (click) = "readFileContent(file);currentFolder=folder.id"><i class="pi pi-file ml-4 text-blue-700" style="font-size: 18px;"></i> <span class="text-xs font-bold text-blue-600 ml-1"> {{file.name}}</span> </button>
                                     <div class="">
                                           <i  id="dropdownMenuIconButtonFolder{{folder.id}}" class="pi pi-ellipsis-v ml-4 text-gray-700 mr-2 cursor-pointer" style="font-size: 12px;" data-dropdown-placement="left-end" attr.data-dropdown-toggle="dropdownDotsFolder{{folder.id}}" aria-hidden="true"></i>
                                           <!-- Dropdown menu -->
                                           <div id="dropdownDotsFolder{{folder.id}}" class="z-10 hidden bg-blue-400 divide-y divide-gray-100 rounded shadow w-44">
                                               <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" attr.aria-labelledby="dropdownMenuIconButtonFolder{{folder.id}}">
                                                 <li>
-                                                  <button (click) = "deleteFile(file.id)" class="block text-white px-4 py-2 hover:bg-gray-100 dark:hover:bg-blue-300">Delete File</button>
+                                                  <button (click) = "deleteFile(file.id)" class="w-full text-left block text-white px-4 py-2 hover:bg-gray-100 dark:hover:bg-blue-300">Delete File</button>
                                                 </li>
                                                 <li>
                                                     <!--start show list folders  -->
@@ -102,6 +122,10 @@
                         </div>
                 </div>
                 <!-- end display folder content -->
+                <div class="flex justify-start items-center shadow-sm mt-2 border rounded-lg p-1">
+                        <i class="pi pi-ellipsis-v text-gray-700 mr-2 cursor-pointer" style="font-size: 12px;"></i>
+                       <span class="text-xs"> if not working this icon can you refresh page</span>
+                </div>
             </div>
             <!-- end sidebar -->
             <!-- start show file details -->
@@ -183,7 +207,7 @@
       <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
       <span class="sr-only">Close menu</span>
    </button>
-   <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Evold : markdown editor that can help to preview markdown files via your application. <a href="https://www.evold.co/" class="text-blue-600 underline dark:text-blue-500 hover:no-underline" target="_blank">Evold website</a></p>
+   <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">markdown editor that can help to preview markdown files via your application. <a href="https://idriss-markdown-editor.tiiny.site/" class="text-blue-600 underline dark:text-blue-500 hover:no-underline">Markdown-editor</a></p>
    <div class="w-full bg-gray-100 rounded-lg p-2">
     <markdown 
     lineNumbers 
@@ -205,7 +229,7 @@
             <div class="p-6 text-center">
                 <h1 class="w-full text-left text-white">Add Folder</h1>
                 <form class="my-4">
-                    <input [(ngModel)] = "newFolder.name" type="text" name="folder-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Add folder" required>
+                    <input [(ngModel)] = "newFolder.name" type="text" id="folder-name" name="folder-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Add folder" required>
                 </form>
                 <div class="flex justify-end items-center gap-3">
                     <button data-modal-hide="add-folder-modal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
@@ -229,7 +253,7 @@
             <div class="p-6 text-center">
                 <h1 class="w-full text-left text-white">Add File</h1>
                 <form class="my-4">
-                    <input [(ngModel)] = "newFile.name" type="text" name="file-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Add file" required>
+                    <input [(ngModel)] = "newFile.name" type="text" id="file-name" name="file-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Add file" required>
                 </form>
                 <div class="flex justify-end items-center gap-3">
                     <button data-modal-hide="add-file-modal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>

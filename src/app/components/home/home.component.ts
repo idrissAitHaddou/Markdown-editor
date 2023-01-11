@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Alert } from 'src/app/core/classes/alert';
 import { File } from 'src/app/core/classes/files';
 import { Folder } from 'src/app/core/classes/folders';
 import { FolderService } from 'src/app/core/services/folder.service';
@@ -16,7 +18,10 @@ export class HomeComponent implements OnInit {
   newContent: string =""
   newFolder: Folder = new Folder()
   newFile: File = new File()
-  constructor(private folderService: FolderService) { 
+  currentFolder: number = 0;
+  messageAlert: string = ""
+  alertStyle: Alert = new Alert()
+  constructor(private folderService: FolderService, private router: Router) { 
   }
 
   ngOnInit(): void {
@@ -25,43 +30,52 @@ export class HomeComponent implements OnInit {
   }
 
   getAllFolders(): void {
-    this.folderService.getAllFolders().subscribe((data: any) => {
-      this.folders = data;
-    })
+    this.folders =  this.folderService.getAllFolders()
   }
   
   getAllFiles(): void {
-    this.folderService.getAllFiles().subscribe((data: any) => {
-      this.files = data;
-    })
+    this.files =  this.folderService.getAllFiles()
   }
 
   addFolder(): void {
-      this.newFolder.id = this.getTime()
-      this.folderService.addFolder(this.newFolder).subscribe(
-        (responce: boolean) => {
-          if(responce) {
-            this.folders.push(this.newFolder)
-          }
-        }),
-        () => this.newFolder.name = ""
+    this.newFolder.id = this.getTime()
+    // this.folderService.addFolder(this.newFolder).subscribe(
+      //   (responce: boolean) => {
+        //     if(responce) {
+            this.folders.push(this.newFolder);
+        //   }
+        // }),
+        // () => this.newFolder.name = "" 
+        (<HTMLInputElement>document.getElementById("simple-search")).value = "";
+        (<HTMLInputElement>document.getElementById("folder-name")).value = "";
+        this.getAllFolders()
+        this.getAllFiles()
+        this.messageAlert = "Folder added successfully"
+        this.alertStyleCss()
+        this.hideAlertAfterTime()
     }
     
     addFile(): void {
         this.newFile.id = this.getTime()
-        this.newFile.created_at = this.formatDate(new Date())
-          console.log(this.newFile)
-          this.folderService.addFile(this.newFile).subscribe(
-            (responce: boolean) => {
-              if(responce) {
-                this.files.push(this.newFile)
-              }
-            }),
-          () => this.newFile.name = ""
+        // this.newFile.created_at = this.formatDate(new Date())
+        //   console.log(this.newFile)
+        //   this.folderService.addFile(this.newFile).subscribe(
+        //     (responce: boolean) => {
+        //       if(responce) {
+                this.files.push(this.newFile);
+          //     }
+          //   }),
+          // () => this.newFile.name = ""
+          (<HTMLInputElement>document.getElementById("simple-search")).value = "";
+          (<HTMLInputElement>document.getElementById("file-name")).value = "";
+          this.getAllFolders()
+          this.getAllFiles()
+          this.messageAlert = "File added successfully"
+          this.alertStyleCss()
+          this.hideAlertAfterTime()
    }
 
    moveFileToFolderInServer(folders: Folder[], idFile: number) {
-    console.log(folders)
     let ctr = 0
       folders.forEach((folder: Folder) => {
           this.folderService.deleteFolder(folder.id).subscribe((responce: boolean) => {
@@ -98,21 +112,25 @@ export class HomeComponent implements OnInit {
         const fileIndex = this.folders[fromIndex].files.findIndex(f => f.id === file.id);
         const removedFile = this.folders[fromIndex].files.splice(fileIndex, 1)[0];
         this.folders[toIndex].files.push(removedFile);
-        this.moveFileToFolderInServer(this.folders, 0)
+        // this.moveFileToFolderInServer(this.folders, 0)
       }else {
         const toIndex = this.folders.findIndex(folder => folder.id === toFolder);
         this.folders[toIndex].files.push(file);
         const indexFileFromFiles = this.files.findIndex(item => item.id === file.id)
         const removedFile = this.files.splice(indexFileFromFiles, 1)[0]
-        this.moveFileToFolderInServer(this.folders, removedFile.id)
+        // this.moveFileToFolderInServer(this.folders, removedFile.id)
     }
+    this.messageAlert = "File moved successfully"
+    this.alertStyleCss()
+    this.hideAlertAfterTime()
+    console.log(this.alertStyle)
  }
 
  deleteFile(idFile: number): void {
   const fileIndexformFiles = this.files.findIndex(item => item.id === idFile)
   if(fileIndexformFiles != (-1)) {
     this.files.splice(fileIndexformFiles, 1)[0]
-    this.updateFilesObjectFromServer(idFile)
+    // this.updateFilesObjectFromServer(idFile)
   }else {
     let folderIndex = 0
     let fileIndex = 0
@@ -126,15 +144,19 @@ export class HomeComponent implements OnInit {
         })
     })
     this.folders[folderIndex].files.splice(fileIndex, 1)[0];
-    this.moveFileToFolderInServer(this.folders, 0)
+    // this.moveFileToFolderInServer(this.folders, 0)
   }
+  this.messageAlert = "File deleted successfully"
+  this.alertStyleCss()
+  this.hideAlertAfterTime()
+  this.reloadData()
  }
 
  updateMarkdownFile(idFile: number, content: string): void {
   const fileIndexformFiles = this.files.findIndex(item => item.id === idFile)
   if(fileIndexformFiles != (-1)) {
     this.files[fileIndexformFiles].content = content
-    this.updateAllFilesWithoutFolder(this.files)
+    // this.updateAllFilesWithoutFolder(this.files)
   }else {
     let folderIndex = 0
     let fileIndex = 0
@@ -149,8 +171,11 @@ export class HomeComponent implements OnInit {
     })
     this.folders[folderIndex].files[fileIndex].content = content
     console.log(this.folders);
-    this.moveFileToFolderInServer(this.folders, 0)
+    // this.moveFileToFolderInServer(this.folders, 0)
   }
+  this.messageAlert = "File updated successfully"
+  this.alertStyleCss()
+  this.hideAlertAfterTime()
  }
 
  updateAllFilesWithoutFolder(files: File[]): void {
@@ -175,23 +200,21 @@ export class HomeComponent implements OnInit {
     const searchName = event.target.value
     if(searchName != "") {
       // get all folders
-        this.folderService.getAllFolders().subscribe(
-            (data: any) => {
-                this.folders = data 
+        // this.folderService.getAllFolders().subscribe(
+        //     (data: any) => {
+                this.folders = this.folderService.getAllFolders() 
                 this.folders = this.folders.filter(folder => folder.name == searchName);
-                console.log(this.folders)
-            },
+            // },
             // () => { const folders = this.folders.filter(folder => folder.name == searchName);  console.log(folders)}
-        )
+        // )
         // get all files
-        this.folderService.getAllFiles().subscribe(
-            (data: any) => { 
-              this.files = data 
+        // this.folderService.getAllFiles().subscribe(
+        //     (data: any) => { 
+              this.files = this.folderService.getAllFiles() 
               this.files =  this.files.filter(file => file.name == searchName)
-              console.log(this.files)
-            },
+            // },
             // () => { const files =  this.files.filter(file => file.name == searchName) }
-        )
+        // )
     }else {
       this.getAllFolders()
       this.getAllFiles()
@@ -226,6 +249,7 @@ export class HomeComponent implements OnInit {
 
   reloadData(): void {
     this.fileSelected =  new File()
+    this.currentFolder = 0
   }
 
   formatDate(date: Date) {
@@ -243,6 +267,22 @@ export class HomeComponent implements OnInit {
   getTime(): number {
     const date = new Date
     return date.getTime()
+  }
+  folderIsRead(idFolder: number): void {
+    this.currentFolder = idFolder
+  }
+
+  alertStyleCss():void {
+    this.alertStyle.svgstyle = `flex-shrink-0 w-5 h-5 text-green-700`
+    this.alertStyle.message = `ml-3 text-sm font-medium text-green-700`
+    this.alertStyle.button = `ml-auto -mx-1.5 -my-1.5 bg-green-100 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8 dark:bg-green-200`
+    this.alertStyle.bg = `w-64 text-xs flex p-4 mb-4 bg-green-100 rounded-lg`
+  }
+
+  hideAlertAfterTime(): void {
+    setTimeout(() => {
+      this.messageAlert = "";
+    }, 3000);
   }
 
 }

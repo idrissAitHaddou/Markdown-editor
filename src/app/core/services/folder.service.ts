@@ -12,12 +12,14 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  getAllFolders(): Observable<Folder[]> {
-      return this.http.get<Folder[]>(environment.baseUrl + "/folders")
+  getAllFolders(): Folder[] {
+      // return this.http.get<Folder[]>(environment.baseUrl + "/folders")
+      return environment.data.folders
   }
 
-  getAllFiles(): Observable<File[]> {
-      return this.http.get<File[]>(environment.baseUrl + "/files")
+  getAllFiles(): File[] {
+      // return this.http.get<File[]>(environment.baseUrl + "/files")
+      return environment.data.files
   }
 
  addFolder(folder: Folder): Observable<boolean> {

@@ -20,6 +20,7 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/logo.png",
               "src/assets"
             ],
             "styles": [
@@ -42,7 +43,9 @@
               "node_modules/prismjs/components/prism-css.min.js",
               "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.js",
               "node_modules/prismjs/plugins/line-highlight/prism-line-highlight.js",
-              "node_modules/prismjs/plugins/command-line/prism-command-line.js"
+              "node_modules/prismjs/plugins/command-line/prism-command-line.js",
+
+              "flowbite/flowbite.min.js"
             ]
           },
           "configurations": {
